@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Professor Ratings</title>
+    <link rel="stylesheet" href="styles.css" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+    />
+    <script>
+      // Add loading indicator
+      window.addEventListener("DOMContentLoaded", function () {
+        const professorsList = document.getElementById("professorsList");
+        // Add loading indicator if the list is empty
+        if (
+          professorsList.children.length === 0 ||
+          (professorsList.children.length === 1 &&
+            professorsList.children[0].tagName === "NOSCRIPT")
+        ) {
+          const loading = document.createElement("div");
+          loading.className = "loading";
+          loading.innerHTML = `
+                    <div class="loading-spinner"></div>
+                    <p>Loading professors...</p>
+                `;
+          professorsList.appendChild(loading);
+        }
+      });
+
+      // Fallback data in case the main script doesn't load
+      window.onload = function () {
+        // Remove loading indicator
+        const loadingEl = document.querySelector(".loading");
+        if (loadingEl) {
+          loadingEl.remove();
+        }
+
+        // Check if professors list is empty (meaning the main script didn't work)
+        if (document.getElementById("professorsList").children.length <= 1) {
+          // 1 for noscript element
+          console.log("Loading fallback data");
+          const professors = [
+            {
+              id: 1,
+              name: "Dr. Sarah Johnson",
+              image: "https://i.pravatar.cc/300?img=1",
+              branch: "Computer Science",
+              subjects: ["Data Structures", "Algorithms", "Machine Learning"],
+              overall: 8.7,
+            },
+            {
+              id: 2,
+              name: "Prof. Michael Chen",
+              image: "https://i.pravatar.cc/300?img=2",
+              branch: "Electronics Engineering",
+              subjects: [
+                "Digital Electronics",
+                "VLSI Design",
+                "Circuit Theory",
+              ],
+              overall: 8.3,
+            },
+            {
+              id: 3,
+              name: "Dr. Emily Rodriguez",
+              image: "https://i.pravatar.cc/300?img=3",
+              branch: "Mathematics",
+              subjects: ["Calculus", "Linear Algebra", "Discrete Mathematics"],
+              overall: 9.1,
+            },
+            {
+              id: 4,
+              name: "Prof. James Wilson",
+              image: "https://i.pravatar.cc/300?img=4",
+              branch: "Mechanical Engineering",
+              subjects: ["Thermodynamics", "Fluid Mechanics", "Machine Design"],
+              overall: 7.9,
+            },
+          ];
+
+          const professorsList = document.getElementById("professorsList");
+          professorsList.innerHTML = professors
+            .map(
+              (professor) => `
+                    <div class="professor-card">
+                        <img src="${professor.image}" alt="${
+                professor.name
+              }" class="professor-image">
+                        <div class="professor-info">
+                            <h2 class="professor-name">${professor.name}</h2>
+                            <p class="professor-branch">${professor.branch}</p>
+                            <div class="professor-subjects">
+                                ${professor.subjects
+                                  .map(
+                                    (subject) => `
+                                    <span class="subject-tag">${subject}</span>
+                                `
+                                  )
+                                  .join("")}
+                            </div>
+                            <div class="rating-box">
+                                <i class="fas fa-star"></i> ${
+                                  professor.overall
+                                } / 10
+                            </div>
+                        </div>
+                    </div>
+                `
+            )
+            .join("");
+
+          // Add animation to cards
+          setTimeout(function () {
+            const cards = document.querySelectorAll(".professor-card");
+            cards.forEach((card, index) => {
+              setTimeout(() => {
+                card.style.opacity = "1";
+                card.style.transform = "translateY(0)";
+              }, index * 100);
+            });
+          }, 100);
+        }
+      };
+    </script>
+  </head>
+  <body>
+    <header>
+      <h1>Professor Ratings</h1>
+      <p class="subtitle">Rate and review your professors</p>
+    </header>
+    <main>
+      <div class="search-container">
+        <div class="search-box">
+          <i class="fas fa-search"></i>
+          <input
+            type="text"
+            id="searchInput"
+            placeholder="Search professors or subjects..."
+          />
+        </div>
+      </div>
+      <div class="professors-grid" id="professorsList">
+        <!-- Fallback content in case JavaScript is disabled -->
+        <noscript>
+          <div class="no-js-message">
+            <i class="fas fa-exclamation-circle fa-3x"></i>
+            <p>Please enable JavaScript to view professor ratings.</p>
+          </div>
+        </noscript>
+      </div>
+    </main>
+
+    <!-- Professor Profile Modal -->
+    <div id="profileModal" class="modal">
+      <div class="modal-content">
+        <span class="close">&times;</span>
+        <div id="professorProfile"></div>
+        <div class="rating-section">
+          <h3>Rate this Professor</h3>
+          <div class="rating-inputs">
+            <div class="rating-input">
+              <label for="attendance">Attendance</label>
+              <input type="range" id="attendance" min="0" max="10" value="5" />
+              <span class="rating-value">5</span>
+            </div>
+            <div class="rating-input">
+              <label for="clarity">Clarity</label>
+              <input type="range" id="clarity" min="0" max="10" value="5" />
+              <span class="rating-value">5</span>
+            </div>
+            <div class="rating-input">
+              <label for="communication">Communication</label>
+              <input
+                type="range"
+                id="communication"
+                min="0"
+                max="10"
+                value="5"
+              />
+              <span class="rating-value">5</span>
+            </div>
+          </div>
+          <div class="comment-section">
+            <textarea
+              id="comment"
+              placeholder="Share your experience with this professor..."
+            ></textarea>
+            <button id="submitRating">
+              <i class="fas fa-paper-plane"></i> Submit Rating
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- Load script at the end for better performance -->
+    <script src="script.js"></script>
+  </body>
+</html>
+
