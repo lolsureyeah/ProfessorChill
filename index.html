@@ -3,202 +3,315 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Professor Ratings</title>
-    <link rel="stylesheet" href="styles.css" />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
-      rel="stylesheet"
-    />
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
-    />
-    <script>
-      // Add loading indicator
-      window.addEventListener("DOMContentLoaded", function () {
-        const professorsList = document.getElementById("professorsList");
-        // Add loading indicator if the list is empty
-        if (
-          professorsList.children.length === 0 ||
-          (professorsList.children.length === 1 &&
-            professorsList.children[0].tagName === "NOSCRIPT")
-        ) {
-          const loading = document.createElement("div");
-          loading.className = "loading";
-          loading.innerHTML = `
-                    <div class="loading-spinner"></div>
-                    <p>Loading professors...</p>
-                `;
-          professorsList.appendChild(loading);
+    <title>Professor Ratings | Academic Excellence Platform</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <style>
+      :root {
+        --primary: #2c3e50;
+        --primary-light: #34495e;
+        --secondary: #3498db;
+        --success: #2ecc71;
+        --warning: #f1c40f;
+        --danger: #e74c3c;
+        --text: #2c3e50;
+        --text-light: #7f8c8d;
+        --background: #f8f9fa;
+        --card-bg: #ffffff;
+        --border: #e0e0e0;
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      }
+
+      body {
+        background: var(--background);
+        color: var(--text);
+        line-height: 1.6;
+      }
+
+      .navbar {
+        background: var(--primary);
+        padding: 1rem 2rem;
+        position: sticky;
+        top: 0;
+        z-index: 100;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      }
+
+      .navbar-content {
+        max-width: 1200px;
+        margin: 0 auto;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .navbar-brand {
+        color: white;
+        font-size: 1.5rem;
+        font-weight: 600;
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      .navbar-brand i {
+        color: var(--secondary);
+      }
+
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 2rem;
+      }
+
+      .page-header {
+        text-align: center;
+        margin-bottom: 2rem;
+      }
+
+      .page-header h1 {
+        color: var(--primary);
+        font-size: 2.5rem;
+        margin-bottom: 1rem;
+      }
+
+      .page-header p {
+        color: var(--text-light);
+        font-size: 1.1rem;
+        max-width: 600px;
+        margin: 0 auto;
+      }
+
+      .search-box {
+        max-width: 600px;
+        margin: 0 auto 2rem;
+        position: relative;
+      }
+
+      .search-box input {
+        width: 100%;
+        padding: 1rem 1rem 1rem 3rem;
+        border: 2px solid var(--border);
+        border-radius: 8px;
+        font-size: 1rem;
+        color: var(--text);
+        transition: all 0.3s ease;
+      }
+
+      .search-box input:focus {
+        outline: none;
+        border-color: var(--secondary);
+        box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+      }
+
+      .search-box i {
+        position: absolute;
+        left: 1rem;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--text-light);
+      }
+
+      .professors-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 2rem;
+        margin-top: 2rem;
+      }
+
+      .professor-card {
+        background: var(--card-bg);
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        transition: all 0.3s ease;
+        cursor: pointer;
+      }
+
+      .professor-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      }
+
+      .professor-card img {
+        width: 100%;
+        height: 200px;
+        object-fit: cover;
+      }
+
+      .professor-info {
+        padding: 1.5rem;
+      }
+
+      .professor-info h3 {
+        color: var(--primary);
+        font-size: 1.2rem;
+        margin-bottom: 0.5rem;
+      }
+
+      .professor-info p {
+        color: var(--text-light);
+        font-size: 0.9rem;
+        margin-bottom: 1rem;
+      }
+
+      .subjects {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        margin-bottom: 1rem;
+      }
+
+      .subject-tag {
+        background: var(--background);
+        color: var(--text);
+        padding: 0.3rem 0.6rem;
+        border-radius: 15px;
+        font-size: 0.8rem;
+        border: 1px solid var(--border);
+      }
+
+      .rating {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      .star-rating {
+        display: flex;
+        gap: 0.2rem;
+      }
+
+      .star-rating i {
+        color: var(--warning);
+      }
+
+      .rating-count {
+        color: var(--text-light);
+        font-size: 0.9rem;
+      }
+
+      .loading {
+        text-align: center;
+        padding: 2rem;
+        color: var(--text-light);
+      }
+
+      .loading i {
+        font-size: 2rem;
+        margin-bottom: 1rem;
+        animation: spin 1s linear infinite;
+      }
+
+      @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+      }
+
+      @media (max-width: 768px) {
+        .container {
+          padding: 1rem;
         }
-      });
 
-      // Fallback data in case the main script doesn't load
-      window.onload = function () {
-        // Remove loading indicator
-        const loadingEl = document.querySelector(".loading");
-        if (loadingEl) {
-          loadingEl.remove();
+        .page-header h1 {
+          font-size: 2rem;
         }
 
-        // Check if professors list is empty (meaning the main script didn't work)
-        if (document.getElementById("professorsList").children.length <= 1) {
-          // 1 for noscript element
-          console.log("Loading fallback data");
-          const professors = [
-            {
-              id: 1,
-              name: "Dr. Sarah Johnson",
-              image: "https://i.pravatar.cc/300?img=1",
-              branch: "Computer Science",
-              subjects: ["Data Structures", "Algorithms", "Machine Learning"],
-              overall: 8.7,
-            },
-            {
-              id: 2,
-              name: "Prof. Michael Chen",
-              image: "https://i.pravatar.cc/300?img=2",
-              branch: "Electronics Engineering",
-              subjects: [
-                "Digital Electronics",
-                "VLSI Design",
-                "Circuit Theory",
-              ],
-              overall: 8.3,
-            },
-            {
-              id: 3,
-              name: "Dr. Emily Rodriguez",
-              image: "https://i.pravatar.cc/300?img=3",
-              branch: "Mathematics",
-              subjects: ["Calculus", "Linear Algebra", "Discrete Mathematics"],
-              overall: 9.1,
-            },
-            {
-              id: 4,
-              name: "Prof. James Wilson",
-              image: "https://i.pravatar.cc/300?img=4",
-              branch: "Mechanical Engineering",
-              subjects: ["Thermodynamics", "Fluid Mechanics", "Machine Design"],
-              overall: 7.9,
-            },
-          ];
-
-          const professorsList = document.getElementById("professorsList");
-          professorsList.innerHTML = professors
-            .map(
-              (professor) => `
-                    <div class="professor-card">
-                        <img src="${professor.image}" alt="${
-                professor.name
-              }" class="professor-image">
-                        <div class="professor-info">
-                            <h2 class="professor-name">${professor.name}</h2>
-                            <p class="professor-branch">${professor.branch}</p>
-                            <div class="professor-subjects">
-                                ${professor.subjects
-                                  .map(
-                                    (subject) => `
-                                    <span class="subject-tag">${subject}</span>
-                                `
-                                  )
-                                  .join("")}
-                            </div>
-                            <div class="rating-box">
-                                <i class="fas fa-star"></i> ${
-                                  professor.overall
-                                } / 10
-                            </div>
-                        </div>
-                    </div>
-                `
-            )
-            .join("");
-
-          // Add animation to cards
-          setTimeout(function () {
-            const cards = document.querySelectorAll(".professor-card");
-            cards.forEach((card, index) => {
-              setTimeout(() => {
-                card.style.opacity = "1";
-                card.style.transform = "translateY(0)";
-              }, index * 100);
-            });
-          }, 100);
+        .professors-grid {
+          grid-template-columns: 1fr;
         }
-      };
-    </script>
+      }
+
+      .scrape-container,
+      .scrape-form,
+      .input-group,
+      .scrape-button,
+      .scrape-status {
+        display: none;
+      }
+
+      .controls-container {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+      }
+
+      .control-group {
+        display: flex;
+        gap: 1rem;
+      }
+
+      .control-group label {
+        font-weight: 600;
+      }
+
+      .control-group select {
+        padding: 0.75rem 1rem;
+        border: 2px solid var(--border);
+        border-radius: 5px;
+        font-size: 1rem;
+      }
+    </style>
   </head>
   <body>
-    <header>
-      <h1>Professor Ratings</h1>
-      <p class="subtitle">Rate and review your professors</p>
-    </header>
-    <main>
+    <nav class="navbar">
+      <div class="navbar-content">
+        <a href="index.html" class="navbar-brand">
+          <i class="fas fa-graduation-cap"></i>
+          Professor Ratings
+        </a>
+      </div>
+    </nav>
+
+    <div class="container">
+      <div class="page-header">
+        <h1>Professor Ratings</h1>
+        <p class="subtitle">Find and rate your professors</p>
+      </div>
+
       <div class="search-container">
         <div class="search-box">
           <i class="fas fa-search"></i>
-          <input
-            type="text"
-            id="searchInput"
-            placeholder="Search professors or subjects..."
-          />
+          <input type="text" id="searchInput" placeholder="Search by professor name...">
         </div>
       </div>
-      <div class="professors-grid" id="professorsList">
-        <!-- Fallback content in case JavaScript is disabled -->
-        <noscript>
-          <div class="no-js-message">
-            <i class="fas fa-exclamation-circle fa-3x"></i>
-            <p>Please enable JavaScript to view professor ratings.</p>
-          </div>
-        </noscript>
-      </div>
-    </main>
 
-    <!-- Professor Profile Modal -->
-    <div id="profileModal" class="modal">
-      <div class="modal-content">
-        <span class="close">&times;</span>
-        <div id="professorProfile"></div>
-        <div class="rating-section">
-          <h3>Rate this Professor</h3>
-          <div class="rating-inputs">
-            <div class="rating-input">
-              <label for="attendance">Attendance</label>
-              <input type="range" id="attendance" min="0" max="10" value="5" />
-              <span class="rating-value">5</span>
-            </div>
-            <div class="rating-input">
-              <label for="clarity">Clarity</label>
-              <input type="range" id="clarity" min="0" max="10" value="5" />
-              <span class="rating-value">5</span>
-            </div>
-            <div class="rating-input">
-              <label for="communication">Communication</label>
-              <input
-                type="range"
-                id="communication"
-                min="0"
-                max="10"
-                value="5"
-              />
-              <span class="rating-value">5</span>
-            </div>
-          </div>
-          <div class="comment-section">
-            <textarea
-              id="comment"
-              placeholder="Share your experience with this professor..."
-            ></textarea>
-            <button id="submitRating">
-              <i class="fas fa-paper-plane"></i> Submit Rating
-            </button>
-          </div>
+      <div class="controls-container">
+        <div class="control-group">
+          <label for="sortSelect">Sort by:</label>
+          <select id="sortSelect">
+            <option value="">Default</option>
+            <option value="name-asc">Name (A-Z)</option>
+            <option value="name-desc">Name (Z-A)</option>
+            <option value="rating-high">Rating (High to Low)</option>
+            <option value="rating-low">Rating (Low to High)</option>
+            <option value="experience-high">Experience (High to Low)</option>
+            <option value="experience-low">Experience (Low to High)</option>
+          </select>
+        </div>
+        <div class="control-group">
+          <label for="branchFilter">Filter by Branch:</label>
+          <select id="branchFilter">
+            <option value="">All Branches</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="professors-grid" id="professorsList">
+        <div class="loading">
+          <i class="fas fa-spinner"></i>
+          <p>Loading professors...</p>
         </div>
       </div>
     </div>
-    <!-- Load script at the end for better performance -->
+
     <script src="script.js"></script>
   </body>
 </html>
